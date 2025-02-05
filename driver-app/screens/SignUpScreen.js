@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, Alert, Text, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { DEVICE_IP } from '@env';
-// console.log(DEVICE_IP);
 
 const SignUpScreen = ({ navigation }) => {
   const [busNumber, setBusNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [route, setRoute] = useState(''); // New state for route
+  const [route, setRoute] = useState('');
 
   const signUp = async () => {
     try {

@@ -1,84 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import * as Location from 'expo-location';
-import axios from 'axios';
-import StudentsList from './StudentsList';
-import { DEVICE_IP } from '@env';
-// console.log(DEVICE_IP);
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { markPickupCompleted, markDropoffCompleted } from '../services/api';
+import StudentsList from '../screens/StudentsList';
 
-const HomeScreen = ({ route, navigation }) => {
+const HomeScreen = ({ route }) => {
   const { busNumber, driverRoute } = route.params;
-  const [location, setLocation] = useState(null);
   const [tracking, setTracking] = useState(false);
-  const [locationSubscription, setLocationSubscription] = useState(null);
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    const requestLocationPermission = async () => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert('Permission Denied', 'Allow location access to start tracking.');
-          return;
-        }
-
-        let currentLocation = await Location.getCurrentPositionAsync({});
-        setLocation(currentLocation.coords);
-      } catch (error) {
-        console.error('Error requesting location permission:', error);
-        Alert.alert('Error', 'An error occurred while requesting location permission.');
-      }
-    };
-
-    requestLocationPermission();
-  }, []);
-
-  const startTracking = async () => {
-    if (!location) {
-      Alert.alert('Location Not Available', 'Please enable location services.');
-      return;
-    }
-
-    setTracking(true);
-
-    const subscription = await Location.watchPositionAsync(
-      {
-        accuracy: Location.Accuracy.High,
-        timeInterval: 4000,
-        distanceInterval: 0,
-      },
-      async (newLocation) => {
-        const { latitude, longitude } = newLocation.coords;
-        setLocation(newLocation.coords);
-
-        try {
-          await axios.post(`${DEVICE_IP}/track`, {
-            busNumber,
-            latitude,
-            longitude,
-          });
-          console.log('Location sent to server');
-        } catch (error) {
-          console.error('Error sending location:', error);
-        }
-      }
-    );
-
-    setLocationSubscription(subscription);
+  const handleScan = (type) => {
+    navigation.navigate('Scan', { busNumber, type });
   };
 
-  const stopTracking = () => {
-    if (locationSubscription) {
-      locationSubscription.remove();
-      setLocationSubscription(null);
+  const handlePickupCompleted = async () => {
+    try {
+      await markPickupCompleted(busNumber);
+      Alert.alert('Pickup Completed', 'All unscanned students marked as absent');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to mark pickup completed');
     }
-    setTracking(false);
   };
 
-  const handleTracking = () => {
-    if (tracking) {
-      stopTracking();
-    } else {
-      startTracking();
+  const handleDropoffCompleted = async () => {
+    try {
+      await markDropoffCompleted(busNumber);
+      Alert.alert('Drop-off Completed', 'Drop-off process completed');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to mark drop-off completed');
     }
   };
 
@@ -89,12 +38,28 @@ const HomeScreen = ({ route, navigation }) => {
         <Text style={styles.subtitle}>Bus Number: {busNumber}</Text>
         <Text style={styles.subtitle}>Route: {driverRoute}</Text>
         <TouchableOpacity
-          style={[styles.button, tracking && styles.trackingButton]}
-          onPress={handleTracking}
+          style={styles.button}
+          onPress={() => handleScan('pickup')}
         >
-          <Text style={[styles.buttonText, tracking && styles.trackingButtonText]}>
-            {tracking ? 'Stop Tracking' : 'Start Tracking'}
-          </Text>
+          <Text style={styles.buttonText}>Pickup Scan</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handlePickupCompleted}
+        >
+          <Text style={styles.buttonText}>Pickup Completed</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleScan('dropoff')}
+        >
+          <Text style={styles.buttonText}>Drop-off Scan</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleDropoffCompleted}
+        >
+          <Text style={styles.buttonText}>Drop-off Completed</Text>
         </TouchableOpacity>
       </View>
       <StudentsList busNumber={busNumber} />
@@ -142,17 +107,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
-  },
-  trackingButton: {
-    backgroundColor: '#ff0000',
+    marginVertical: 10,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  trackingButtonText: {
-    color: '#fff',
   },
 });
 

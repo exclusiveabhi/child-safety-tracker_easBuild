@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Image, StyleSheet, ScrollView } from 'react-native';
-import axios from 'axios';
-import { DEVICE_IP } from '@env';
-// console.log(DEVICE_IP);
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, ScrollView, StyleSheet, Image } from 'react-native';
+import { getStudentsByBusNumber } from '../services/api';
 
 const StudentsList = ({ busNumber }) => {
   const [students, setStudents] = useState([]);
@@ -10,62 +8,29 @@ const StudentsList = ({ busNumber }) => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        console.log(`Fetching students for bus number: ${busNumber}`);
-        const response = await axios.get(`${DEVICE_IP}/students/${busNumber}`);
-        console.log('Fetched students:', response.data);
+        const response = await getStudentsByBusNumber(busNumber);
         setStudents(response.data);
       } catch (error) {
-        console.error('Error fetching students:', error);
+        console.error('Failed to fetch students:', error);
       }
     };
 
     fetchStudents();
   }, [busNumber]);
 
-  const handleAttendance = async (studentId, status, email) => {
+  const handleAttendance = async (studentId, status) => {
     setStudents(prevStudents =>
       prevStudents.map(student =>
         student._id === studentId ? { ...student, attendance: status } : student
       )
     );
     console.log(`Student ID: ${studentId}, Status: ${status}`);
-    const date = new Date();
-
-let day = date.getDate();
-let month = date.getMonth() + 1;
-let year = date.getFullYear();
-
-// This arrangement can be altered based on how we want the date's format to appear.
-let currentDate = `${day}-${month}-${year}`;
-console.log(currentDate); // "17-6-2022"
-
-    try {
-      await axios.post('http://192.168.159.51:3000/send-email', {
-        email: email,
-        subject: `Attendance Update for Your Child`,
-        text: `Dear Parent/Guardian,
-
-We would like to inform you about your child’s attendance status for ${currentDate}.:
-
-Status: ${status}
-
-Attendance plays a crucial role in their academic journey, and we encourage regular updates. If you have any questions or need to share details regarding this, please feel free to reach out.
-
-Thank you for your continued support.
-
-Best regards
-Guradian Sync Team`,
-      });
-      console.log('Email sent successfully');
-    } catch (error) {
-      console.error('Error sending email:', error);
-    }
   };
 
   return (
     <ScrollView style={styles.container}>
       {students.map(student => (
-                <View key={student._id} style={styles.studentCard}>
+        <View key={student._id} style={styles.studentCard}>
           <Image source={{ uri: student.photo }} style={styles.photo} />
           <Text style={styles.name}>{student.name}</Text>
           <Text style={styles.class}>{student.class}</Text>
@@ -73,21 +38,21 @@ Guradian Sync Team`,
             <View style={styles.button}>
               <Button
                 title="Picked"
-                onPress={() => handleAttendance(student._id, 'Picked', student.email)}
+                onPress={() => handleAttendance(student._id, 'Picked')}
                 color={student.attendance === 'Picked' ? 'green' : 'blue'}
               />
             </View>
             <View style={styles.button}>
               <Button
                 title="Dropped"
-                onPress={() => handleAttendance(student._id, 'Dropped', student.email)}
+                onPress={() => handleAttendance(student._id, 'Dropped')}
                 color={student.attendance === 'Dropped' ? 'green' : 'blue'}
               />
             </View>
             <View style={styles.button}>
               <Button
                 title="Absent"
-                onPress={() => handleAttendance(student._id, 'Absent', student.email)}
+                onPress={() => handleAttendance(student._id, 'Absent')}
                 color={student.attendance === 'Absent' ? 'red' : 'blue'}
               />
             </View>
@@ -99,6 +64,10 @@ Guradian Sync Team`,
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
   studentCard: {
     padding: 25,
     margin: 20,
@@ -108,7 +77,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
-    alignItems: 'center', // Center the content horizontally
+    alignItems: 'center',
   },
   photo: {
     width: 100,
@@ -128,11 +97,11 @@ const styles = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%', // Ensure buttons take full width
+    width: '100%',
   },
   button: {
     flex: 1,
-    marginHorizontal: 5, // Add gap between buttons
+    marginHorizontal: 5,
   },
 });
 
