@@ -6,12 +6,8 @@
     "start": "vite"
   },
   "dependencies": {
-    "@tensorflow-models/face-landmarks-detection": "^1.0.6",
-    "@tensorflow/tfjs": "^4.22.0",
-    "aws-sdk": "^2.1692.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
-    "canvas": "^3.1.0",
     "cors": "^2.8.5",
     "debug": "^4.4.0",
     "dotenv": "^16.4.7",

@@ -109,7 +109,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.driverapp"
+    namespace 'com.exclusiveabhi.driverapp'
     defaultConfig {
         applicationId 'com.exclusiveabhi.driverapp'
         minSdkVersion rootProject.ext.minSdkVersion

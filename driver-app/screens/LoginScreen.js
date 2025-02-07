@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, Alert, Text, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { DEVICE_IP } from '@env';
+// console.log(DEVICE_IP);
 
 const LoginScreen = ({ navigation }) => {
   const [busNumber, setBusNumber] = useState('');
@@ -19,7 +20,9 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const signUp = () => {
+    // Handle sign up logic here
     navigation.navigate('SignUp');
+    // Alert.alert('Sign Up', 'Sign up functionality to be implemented');
   };
 
   return (

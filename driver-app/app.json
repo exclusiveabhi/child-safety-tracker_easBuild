@@ -25,6 +25,11 @@
       "favicon": "./assets/favicon.png"
     },
     "sdkVersion": "51.0.0",
-    "newArchEnabled": true
+    "jsEngine": "jsc",
+    "extra": {
+      "eas": {
+        "projectId": "b898f160-e2ed-41ab-825a-34c29e168007"
+      }
+    }
   }
 }
