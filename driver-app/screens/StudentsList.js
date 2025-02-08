@@ -31,16 +31,16 @@ const StudentsList = ({ busNumber }) => {
     console.log(`Student ID: ${studentId}, Status: ${status}`);
     const date = new Date();
 
-let day = date.getDate();
-let month = date.getMonth() + 1;
-let year = date.getFullYear();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
 
-// This arrangement can be altered based on how we want the date's format to appear.
-let currentDate = `${day}-${month}-${year}`;
-console.log(currentDate); // "17-6-2022"
+    // This arrangement can be altered based on how we want the date's format to appear.
+    let currentDate = `${day}-${month}-${year}`;
+    console.log(currentDate); // "17-6-2022"
 
     try {
-      await axios.post('http://192.168.159.51:3000/send-email', {
+      await axios.post(`${DEVICE_IP}/send-email`, {
         email: email,
         subject: `Attendance Update for Your Child`,
         text: `Dear Parent/Guardian,
@@ -65,7 +65,7 @@ Guradian Sync Team`,
   return (
     <ScrollView style={styles.container}>
       {students.map(student => (
-                <View key={student._id} style={styles.studentCard}>
+        <View key={student._id} style={styles.studentCard}>
           <Image source={{ uri: student.photo }} style={styles.photo} />
           <Text style={styles.name}>{student.name}</Text>
           <Text style={styles.class}>{student.class}</Text>

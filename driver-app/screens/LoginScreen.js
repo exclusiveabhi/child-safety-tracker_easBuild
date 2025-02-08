@@ -15,14 +15,13 @@ const LoginScreen = ({ navigation }) => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       navigation.navigate('Home', { busNumber, driverRoute: route });
     } catch (error) {
-      Alert.alert('Login Failed', 'Invalid bus number or password');
+      console.error('Error during login:', error);
+      Alert.alert('Login Failed', error.response?.data?.message || 'Invalid bus number or password');
     }
   };
 
   const signUp = () => {
-    // Handle sign up logic here
     navigation.navigate('SignUp');
-    // Alert.alert('Sign Up', 'Sign up functionality to be implemented');
   };
 
   return (

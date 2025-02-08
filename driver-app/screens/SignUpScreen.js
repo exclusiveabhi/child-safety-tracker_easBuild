@@ -17,7 +17,8 @@ const SignUpScreen = ({ navigation }) => {
         navigation.navigate('Login');
       }
     } catch (error) {
-      Alert.alert('Sign Up Failed', 'Please try again');
+      console.error('Error during sign up:', error);
+      Alert.alert('Sign Up Failed', error.response?.data?.message || 'Please try again');
     }
   };
 

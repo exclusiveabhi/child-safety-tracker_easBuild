@@ -51,7 +51,7 @@ const HomeScreen = ({ route, navigation }) => {
         setLocation(newLocation.coords);
 
         try {
-          await axios.post(`${DEVICE_IP}/track`, {
+          await axios.post(`${DEVICE_IP}/bus-location`, {
             busNumber,
             latitude,
             longitude,
