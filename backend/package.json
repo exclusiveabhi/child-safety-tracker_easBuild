@@ -2,9 +2,11 @@
   "name": "admin-portal",
   "version": "1.0.0",
   "main": "src/main.jsx",
-  "scripts": {
-    "start": "vite"
-  },
+"scripts": {
+  "dev": "nodemon server.js",
+  "start": "vite"
+},
+
   "dependencies": {
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
